@@ -51,8 +51,6 @@ router.post('/', (req, res) => {
                 status: 'success',
                 body: reviewString,
             };
-
-            console.log(response);
             res.status(201).json(response);
 
         }
@@ -61,5 +59,40 @@ router.post('/', (req, res) => {
 });
 
 
+
+router.delete('/:id', (req, res) => {
+    const noteId = parseInt(req.params.id);
+
+    fs.readFile("./db/db.json", "utf-8", (err, data) => {
+        if (err) {
+            res.status(500).json(err)
+        }
+        let newUpdate = [];
+
+        newUpdate = JSON.parse(data)
+
+        const noteIndex = newUpdate.findIndex(note => note.id === noteId);
+
+        if (noteIndex !== -1) {
+            const deletedNote = newUpdate.splice(noteIndex, 1);
+        }
+
+        const reviewString = JSON.stringify(newUpdate, null, 4);
+
+        fs.writeFile("./db/db.json", reviewString, (err) =>
+            err
+                ? console.error(err)
+                : console.log(
+                    `Review has been written to JSON file`
+                )
+        );
+
+        const response = {
+            status: 'success',
+            body: reviewString,
+        };
+        res.status(201).json(response);
+    })
+});
 
 module.exports = router;
